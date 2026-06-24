@@ -43,7 +43,7 @@ class Figure3(Processor):
 
     @override
     def process(self) -> None:
-        with Timer() as timer, timer.pushed("Outline"):
+        with Timer() as timer, timer.pushed("Figure 3"):
             with timer.pushed("Calculating"):
                 _ = self.tree.calculate_root().calculate_c().calculate_base()
             with timer.pushed("Drawing"):

@@ -51,7 +51,7 @@ class Figure1(Processor):
 
     @override
     def process(self) -> None:
-        with Timer() as timer, timer.pushed("Outline"):
+        with Timer() as timer, timer.pushed("Figure 1"):
             with timer.pushed("Calculating"):
                 self.tree.calculate_tree(
                     self.max_triangles,
