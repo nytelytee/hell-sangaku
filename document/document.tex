@@ -1,0 +1,1494 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{subcaption}
+
+\setlength{\parskip}{12pt}
+\setlength{\parindent}{0pt}
+
+\usepackage[utf8]{inputenc}
+
+\usepackage{amsmath}
+\usepackage[inkscapearea=drawing]{svg}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{needspace}
+\usepackage{letltxmacro}
+\usepackage{graphicx}
+\usepackage{extarrows}
+
+% easily make a set 
+\DeclarePairedDelimiterX\set[1]{\lbrace}{\rbrace}{\def\given{\;\delimsize\vert\;}\,#1\,}
+
+% index concatenation
+\newcommand\doubleplus{\mathbin{+\!+}}
+
+% wrap single quotes around a symbol in math mode, used for index parts
+\newcommand{\HSindexpart}[1]{\text{`}#1\text{'}}
+
+% used commonly
+
+\newcommand{\contradiction}{\Rightarrow\!\Leftarrow}
+
+\newcommand{\HSview}[1][V]{\widetilde{#1}}
+
+\newcommand{\HStriangle}[1][I]{\triangle_{\HSview:#1}}
+
+\newcommand{\HSA}[1][I]{A_{\HSview:#1}}
+\newcommand{\HSB}[1][I]{B_{\HSview:#1}}
+\newcommand{\HSC}[1][I]{C_{\HSview:#1}}
+\newcommand{\HSAx}[1][I]{A_{x\HSview:#1}}
+\newcommand{\HSBx}[1][I]{B_{x\HSview:#1}}
+\newcommand{\HSCx}[1][I]{C_{x\HSview:#1}}
+\newcommand{\HSAy}[1][I]{A_{y\HSview:#1}}
+\newcommand{\HSBy}[1][I]{B_{y\HSview:#1}}
+\newcommand{\HSCy}[1][I]{C_{y\HSview:#1}}
+
+\newcommand{\HST}[1][I]{T_{\HSview:#1}}
+\newcommand{\HSL}[1][I]{L_{\HSview:#1}}
+\newcommand{\HSR}[1][I]{R_{\HSview:#1}}
+\newcommand{\HSTx}[1][I]{T_{x\HSview:#1}}
+\newcommand{\HSLx}[1][I]{L_{x\HSview:#1}}
+\newcommand{\HSRx}[1][I]{R_{x\HSview:#1}}
+\newcommand{\HSTy}[1][I]{T_{y\HSview:#1}}
+\newcommand{\HSLy}[1][I]{L_{y\HSview:#1}}
+\newcommand{\HSRy}[1][I]{R_{y\HSview:#1}}
+
+\newcommand{\HSPSI}[1][I]{\Psi_{\HSview:#1}}
+\newcommand{\HSPSIx}[1][I]{\Psi_{x\HSview:#1}}
+\newcommand{\HSPSIy}[1][I]{\Psi_{y\HSview:#1}}
+
+\newcommand{\HSPHI}[1][I]{\Phi_{\HSview:#1}}
+\newcommand{\HSPHIx}[1][I]{\Phi_{x\HSview:#1}}
+\newcommand{\HSPHIy}[1][I]{\Phi_{y\HSview:#1}}
+
+\newcommand{\HSO}[1][I]{O_{\HSview:#1}}
+\newcommand{\HSOx}[1][I]{O_{x\HSview:#1}}
+\newcommand{\HSOy}[1][I]{O_{y\HSview:#1}}
+
+\newcommand{\HStau}{\tau_{\HSview}}
+\newcommand{\HSlambda}{\lambda_{\HSview}}
+\newcommand{\HSrho}{\rho_{\HSview}}
+
+\newcommand{\HSk}{k_{\HSview}}
+\newcommand{\HSdelta}[1][d]{\delta_{#1}}
+\newcommand{\HSs}[1][d]{s_{\HSview:#1}}
+\newcommand{\HSsigma}[1][d]{\sigma_{\HSview:#1}}
+\newcommand{\HSkappa}[1][d]{\kappa_{\HSview:#1}}
+
+
+% insert a thin space after a comma in math mode, if it is followed by a space in the source
+% stolen from stack exchange
+\makeatletter
+\AtBeginDocument{%
+  \mathchardef\stdcomma=\mathcode`,
+  \mathcode`,="8000
+}
+\begingroup\lccode`~=`, \lowercase{\endgroup\def~}{%
+  \futurelet\@let@token\spaced@comma
+}
+\newcommand{\spaced@comma}{%
+  \stdcomma
+  \ifx\@let@token\@sptoken\,\fi
+}
+\makeatother
+
+% closed square root, i slanted it a bit because i think it looks pretty
+% also stolen from stack exchange and modified slightly
+\makeatletter
+\let\oldr@@t\r@@t
+\def\r@@t#1#2{%
+\setbox0=\hbox{$\oldr@@t#1{#2}$}\dimen0=\ht0
+\advance\dimen0-0.2\ht0
+\setbox2=\hbox{\kern-0.025em\rotatebox[origin=t]{20}{\vrule height\ht0 depth -\dimen0}}%
+{\box0\lower0.6pt\box2}}
+\LetLtxMacro{\oldsqrt}{\sqrt}
+\renewcommand*{\sqrt}[2][\ ]{\oldsqrt[#1]{#2} }
+\makeatother
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem*{remark}{Remark}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{plain}
+
+\title{Hell Sangaku}
+\author{NyteLyte}
+\date{}
+
+\begin{document}
+	\maketitle
+
+	\tableofcontents
+	\pagebreak
+
+	\section{Introduction}
+
+	Starting with a circle around the origin, inscribe an arbitrary non-degenerate triangle into it.
+	Our goal is to put more copies of that triangle (where only scaling and translation are
+	allowed) into the circle such that the following must be satisfied at every step:\begin{itemize}
+		\item every triangle must touch the circle at least once,
+		\item every triangle must touch either the circle or another triangle at all three of its vertices,
+		\item the triangles must not overlap (neither interiors nor edges) and they must not share vertices
+	\end{itemize}
+
+	We put as many copies of the triangle into the circle as we can.
+
+	\begin{figure}[h]
+		\centering
+		\def\svgwidth{\columnwidth}
+		\scalebox{0.85}{\includesvg{figure1.svg}}
+		\caption{The fractal this procedure creates, using an equilateral triangle}
+	\end{figure}
+
+	\newpage
+	\section{Definitions and notation}
+
+	A point $P$ is an ordered pair of 2 real numbers $x$ and $y$.
+	Referring to a specific coordinate on a point is written $P_x$ and $P_y$.
+	
+	We write the set of all triangles as $\mathbb{T} \coloneqq \set{ (A, B, C) \given A, B, C \in \mathbb{R}^2 }$.
+
+	We write the set of all triangles where the winding order is counter-clockwise as $\mathbb{T}^+$. All triangles from now on will be assumed to be in $\mathbb{T}^+$.
+
+	We also write some triangle $\left(A, B, C\right)$ as $\triangle ABC$.
+	
+	\begin{definition}
+		A \textbf{view transformation} $\widetilde{P}_{\triangle ABC} : \mathbb{R}^2 \to \mathbb{R}^2$, where $\triangle ABC$ is a triangle and $P \in \set{A, B, C}$,
+		is a rotation of the coordinate space around the origin such that $P_y > Q_y = R_y$, where $Q$ and $R$ are the two triangle points that are $\neq P$.
+	\end{definition}
+	
+	\begin{definition}
+		An \textbf{inverse view transformation} $\widetilde{P}_{\triangle ABC}^{-1} : \mathbb{R}^2 \to \mathbb{R}^2$
+		of view transformation $\widetilde{P}_{\triangle ABC}$ is a function such that
+		$$\widetilde{P}_{\triangle ABC}^{-1}\left(\widetilde{P}_{\triangle ABC}\left(p\right)\right) =
+		  \widetilde{P}_{\triangle ABC}\left(\widetilde{P}_{\triangle ABC}^{-1}\left(p\right)\right) =
+		  p, \forall p \in \mathbb{R}^2$$
+	\end{definition}
+
+	A view transformation applied to a triangle is a shorthand for a triangle with the view transformation applied to all 3 of its points.
+	For all view transformations $\HSview$, $$\HSview\left(\triangle ABC\right) \coloneqq \left(\HSview\left(A\right), \HSview\left(B\right), \HSview\left(C\right)\right)$$
+	This also applies to inverse view transformations.
+
+	The radius of the circle is $r$.
+
+	\begin{definition}
+		The \textbf{root triangle} $\triangle_R \coloneqq \triangle A_R B_R C_R$ is a triangle touching the circle at all 3 points.
+		It has angles $\alpha$, $\beta$, and $\gamma$ at vertices $A_R$, $B_R$, and $C_R$, respectively.
+	\end{definition}
+
+	\begin{conjecture}\label{uniqueness-conjecture}
+		For any choice of a root triangle---that is, a choice of 3 distinct points on the circle---there is a unique solution for the set of triangles that satisfies the constraints of the problem.
+		It is possible to fit an infinite amount of triangles into the circle this way.
+	\end{conjecture}
+
+	We define the three canonical view transformations in relation to the root triangle:
+	$$\widetilde{A} \coloneqq {\widetilde{A_R}} _ {\triangle_R}$$
+	$$\widetilde{B} \coloneqq {\widetilde{B_R}} _ {\triangle_R}$$
+	$$\widetilde{C} \coloneqq {\widetilde{C_R}} _ {\triangle_R}$$
+
+	\begin{remark}
+		Because of the constraints of the problem---all triangles filling the circle must be of the same rotation---those three
+		view transformations are the only relevant ones in the problem, and thus may apply to any subsequent triangle.
+	\end{remark}
+
+	After a view transformation has been applied to a triangle, we will
+	refer to such a triangle as a \textbf{positive triangle}.
+	When we speak of a positive triangle, we refer to its points as ``top'', ``left'', ``right'', defined later.
+
+	\begin{remark}
+		The triangle is referred to as positive because it has a clear direction it is ``pointing'' in, upwards.
+		All a positive triangle really is is a regular triangle in a view transformation with vertices ``top'', ``left'', ``right''.
+	\end{remark}
+
+	\begin{figure}[h]
+		\begin{subfigure}{0.5\textwidth}
+			\centering
+			\def\svgwidth{\columnwidth}
+			\scalebox{0.85}{\includesvg{figure2a.svg}}
+			\caption{Before applying $\HSview[C]$}
+		\end{subfigure}
+		\begin{subfigure}{0.5\textwidth}
+			\centering
+			\def\svgwidth{\columnwidth}
+			\scalebox{0.85}{\includesvg{figure2b.svg}}
+			\caption{After applying $\HSview[C]$}
+		\end{subfigure}
+		\caption{Application of a view transformation}
+	\end{figure}
+	
+	\begin{remark}
+		Notice that, after inscribing the root triangle into the circle, we have essentially `split' the circle into a triangle and three circular segments.
+		A view transformation of one of the root triangle's points places the segment opposite that point below the root triangle in that transformed space.
+	\end{remark}
+	
+	\begin{definition}
+		A triangle $\triangle_X$ is said to \textbf{touch} triangle $\triangle_Y$ if a vertex of $\triangle_X$ touches a side of $\triangle_Y$.
+		A triangle is said to touch the circle if one of its vertices is on the circle.
+	\end{definition}
+	
+	\begin{remark}
+		Triangle $\triangle_X$ touching triangle $\triangle_Y$ does not imply that $\triangle_Y$ touches $\triangle_X$.
+		In fact, since triangles cannot share vertices or overlap in our problem, it implies the opposite:
+		if $\triangle_X$ touches $\triangle_Y$, $\triangle_Y$ cannot touch $\triangle_X$.
+	\end{remark}
+	
+	After applying some view transformation $\HSview$, we have to construct a triangle that, at all 3 of its points, touches either the circle or another triangle,
+	with at least one of those being the circle. It is clear that, since the bottom side is (by definition of $\HSview$) parallel to the $x$ axis, and it is below the
+	root triangle, both of the bottom points of our constructed triangle must touch the circle.
+	\begin{conjecture}
+		The top point of our constructed triangle must touch the triangle above it and cannot touch the circle.
+	\end{conjecture}
+
+	\begin{definition}
+		A \textbf{base triangle} is a triangle inscribed in a circular segment such that two of its vertices
+		touch circle and its remaining vertex touches another base triangle or the root triangle.
+	\end{definition}
+	
+	\begin{figure}[h]
+		\centering
+		\def\svgwidth{\columnwidth}
+		\scalebox{0.65}{\includesvg{figure3.svg}}
+		\caption{The base triangle inscribed in a circular segment created by the root triangle}
+	\end{figure}
+
+	\begin{remark}
+		Notice that, after inscribing the base triangle into the circular segment, we have essentially `split' the circular segment into a triangle, another circular segment, and two other regions.
+		If we were to inscribe another triangle in the segment, we would get another base triangle.
+	\end{remark}
+
+	\begin{definition}
+		A \textbf{pseudo-sector} is a region bounded by a circular arc and two line segments from the arc's endpoints to an arbitrary interior point.
+		The arbitrary interior point is called the \textbf{origin} of the pseudo-sector.
+	\end{definition}
+
+	\begin{remark}
+		A pseudo-sector in our problem is the space enclosed by an arc and 2 triangles, where the ``arbitrary interior point'' is the point where one triange touches another.
+		Its non-arc components, thus, lie on the sides of 2 different triangles. Since we are in a view transformation, one of the line segments is always on top and parallel to the $x$ axis.
+		We can call that line segment the top part of the pseudo-sector. The other line segment will be the left/right part of the pseudo-sector.
+	\end{remark}
+
+	We now have 2 pseudo-sectors to choose from, the left pseudo-sector and right pseudo-sector.
+
+	Notice how, if we were to extend a horizontal line from the circular arc belonging to a pseudosector toward the
+	inside of the circle, it would intsersect another edge of the pseudo-sector before intersecting
+	the other side of the circle, because the pseudo-sector covers the entire vertical area we are drawing the horizontal line from.
+	This applies both to the left and right pseudo-sectors.
+
+	Therefore, if we were to construct a triangle inside a pseudo-sector, its bottom side would have to touch the circle at least once, and another triangle at least once.
+
+	\begin{conjecture}
+		The top point of our constructed triangle must touch the top part of the pseudo-sector, which is a bottom line of another triangle, different from the one it already has to touch.
+		It cannot touch the circle.
+	\end{conjecture}
+
+	\begin{definition}
+		A \textbf{normal triangle} is a triangle inscribed in a pseudo-sector such that it touches the circle at one vertex, and two different triangles at its other two vertices.
+	\end{definition}
+	
+	\begin{figure}[h]
+		\centering
+		\def\svgwidth{\columnwidth}
+		\scalebox{0.65}{\includesvg{figure4.svg}}
+		\caption{A normal triangle inscribed in a left pseudo-sector of a base triangle}
+	\end{figure}
+	
+	\begin{remark}
+		Notice that, after inscribing the normal triangle into the pseudo-sector, we have essentially `split' the pseudo-sector into two triangles and two pseudo-sectors.
+		If we were to inscribe another triangle in either of the two pseudo-sectors, we would get another normal triangle.
+		Notice how one of the pseudo-sectors is below the inscribed triangle, and one is to the left/right (horizontal), depending on which main pseudo-sector we chose from the base.
+	\end{remark}
+
+	\begin{definition}
+		A \textbf{horizontal pseudo-sector} of a normal triangle is the pseudo-sector to its left, on the left side of the circle, or the pseudo-sector to its right, on the right side of the circle.
+	\end{definition}
+
+	\begin{definition}
+		A \textbf{vertical pseudo-sector} of a normal triangle is the pseudo-sector below it.
+	\end{definition}
+
+	\begin{definition}
+		A \textbf{horizontal triangle} is a normal triangle constructed inside a horizontal pseudo-sector of a normal or a left/right pseudo-sector of a base triangle.
+	\end{definition}
+
+	\begin{definition}
+		A \textbf{vertical triangle} is a normal triangle constructed inside a vertical pseudo-sector of a normal triangle.
+	\end{definition}
+
+	\Needspace{15\baselineskip}
+	Notice how, at each step, we are creating new spaces to fit more triangles into. As such, we can establish a parent-child relationship and structure this problem as a tree.
+	\begin{definition}
+		A \textbf{triangle tree} is a tree with the following node types:\begin{itemize}
+			\item a \textbf{root triangle node} which represents the root triangle,
+			\item a \textbf{root side node} which represents a side of the root triangle (a/b/c),
+			\item a \textbf{base triangle node} which represents a base triangle,
+			\item a \textbf{base side node} which represents a side of the base triangle (left/right),
+			\item a \textbf{normal triangle node} which represents a normal triangle
+		\end{itemize}
+		
+		A root triangle node has no parents and has three root side node children.
+		These children are called `a', `b', and `c'.
+
+		A root side node has a root triangle node parent and one base triangle node child.
+		This child is called `base'.
+
+		A base triangle node has either a root side node parent or a base triangle node parent, two base side node children, and one base triangle node child.
+		The two base side node children are called `left' and `right', and the base triangle node child is called `base'
+
+		A base side node has a base triangle node parent and one normal triangle node child.
+		This child is called `horizontal'.
+
+		A normal triangle node has either a base side node parent or a normal triangle node parent, and two normal triangle node children.
+		These children are called `horizontal' and `vertical'.
+
+	\end{definition}
+
+	\Needspace{15\baselineskip}
+	We also need a way to refer to a given triangle.
+	\begin{definition}
+		An \textbf{index part} represents a triangle tree node type and is one of the following symbols: \begin{itemize}
+			\item `$R$', which represents a root triangle node
+			\item `$a$'/`$b$'/`$c$', which represents a root side node
+			\item `$B$', which represents a base triangle node
+			\item `$l$'/`$r$', which represents a base side node, where `$l$' is left and `$r$' is right
+			\item `$H$'/`$V$', which represents a normal triangle node, where `$H$' is horizontal and `$V$' is vertical
+		\end{itemize}
+	\end{definition}
+
+	\Needspace{15\baselineskip}
+	\begin{definition}
+		An \textbf{index} is a string of concatenated string of identifier parts, representing a path taken in a triangle tree.
+		It is subject to the following restrictions:\begin{itemize}
+			\item it must be nonempty,
+			\item an `$R$' part must be preceeded by nothing,
+			\item an `$a$'/`$b$'/`$c$' part must be preceeded by an `$R$' part,
+			\item a `$B$' part must be preceeded by an `$a$'/`$b$'/`$c$' part or a `$B$' part,
+			\item an `$l$'/`$r$' part must be preceeded by a `$B$' part,
+			\item an `$H$' part must be preceeded by an `$l$'/`$r$' part, an `$H$' part, or a `$V$' part,
+			\item a `$V$' part must be preceeded by an `$H$' part or a `$V$' part
+		\end{itemize}
+
+		Concatenation of an index part to an index can also be denoted by $I \doubleplus i$, where $I$ is an index and $i$ is an index part.
+		This will be used where juxtaposition is ambiguous, like with a variable and a symbol (e.g. $I \doubleplus \HSindexpart{H}$ is preferred to $IH$).
+
+		An index is said to be real if it ends with an `$R$', `$B$', or an `$H$'/`$V$' part.
+	\end{definition}
+
+	\begin{definition}
+		The \textbf{root index} is index $R$.
+		A \textbf{base index} is an index which ends with a `$B$' part.
+		A \textbf{normal index} is an index which ends with a `$H$'/`$V$' part.
+		A \textbf{horizontal index} is an index which ends with a `$H$' part.
+		A \textbf{vertical index} is an index which ends with a `$V$' part.
+		A \textbf{left index} is an index which contains an `$l$' part.
+		A \textbf{right index} is an index which contains an `$r$' part.
+	\end{definition}
+
+	Examples of indices are:\\
+	$R$: the root triangle,\\
+	$RaB$: the first base triangle on root side a,\\
+	$RbB$: the first base triangle on root side b,\\
+	$RaBBlHHV$: the vertical child of the horizontal child of the left horizontal child of the base child of the base child of the root triangle on root side a
+	
+	With $I$ being a real index and $\HSview$ being a view transformation:\\
+	$\triangle_I \coloneqq \triangle A_I B_I C_I$: a triangle in the triangle tree without any transformations,\\
+	$\HSview\left(\triangle_I\right) \coloneqq \HStriangle \coloneqq \triangle \HSA \HSB \HSC$: a triangle in the triangle tree with a view transformation
+
+	We also denote the following substitutions:
+
+	$\HST = \begin{cases}
+		\HSA, & \HSview \text{ is } \HSview[A]\\
+		\HSB, & \HSview \text{ is } \HSview[B]\\
+		\HSC, & \HSview \text{ is } \HSview[C]\\
+  \end{cases}$,\quad\quad
+	$\HSL = \begin{cases}
+		\HSB, & \HSview \text{ is } \HSview[A]\\
+		\HSC, & \HSview \text{ is } \HSview[B]\\
+		\HSA, & \HSview \text{ is } \HSview[C]\\
+  \end{cases}$,\quad\quad
+	$\HSR = \begin{cases}
+		\HSC, & \HSview \text{ is } \HSview[A]\\
+		\HSA, & \HSview \text{ is } \HSview[B]\\
+		\HSB, & \HSview \text{ is } \HSview[C]\\
+  \end{cases}$
+	
+	\pagebreak
+	We analogously define the following angle substitutions:
+
+	$\tau_{\HSview} = \begin{cases}
+		\alpha, & \HSview \text{ is } \HSview[A]\\
+		\beta, & \HSview \text{ is } \HSview[B]\\
+		\gamma, & \HSview \text{ is } \HSview[C]\\
+  \end{cases}$,\quad\quad
+	$\lambda_{\HSview} = \begin{cases}
+		\beta, & \HSview \text{ is } \HSview[A]\\
+		\gamma, & \HSview \text{ is } \HSview[B]\\
+		\alpha, & \HSview \text{ is } \HSview[C]\\
+  \end{cases}$,\quad\quad
+	$\rho_{\HSview} = \begin{cases}
+		\gamma, & \HSview \text{ is } \HSview[A]\\
+		\alpha, & \HSview \text{ is } \HSview[B]\\
+		\beta, & \HSview \text{ is } \HSview[C]\\
+  \end{cases}$
+	
+	If we are referring to a coordinate of some point on any triangle in the triangle tree, we write the
+	coordinate before the index or view transformation in the subscript: $A_{xI}$, $\HSAx$, $\HSTx$.
+	
+	\begin{figure}[h]
+		\centering
+		\def\svgwidth{\columnwidth}
+		\scalebox{0.65}{\includesvg{figure5.svg}}
+		\caption{Triangle tree structure}
+	\end{figure}
+	
+	We denote:\\
+	$\mathcal{I}_\Omega$: the set of all indices,\\
+	$\mathcal{I}$: the set of all real indices,\\
+	$\mathcal{I}_R$: the set containing the root index,\\
+	$\mathcal{I}_{B}$: the set containing every base index,\\
+	$\mathcal{I}_{Bv}$: the set containing every base index on root side $v$,\\
+	$\mathcal{I}_{N}$: the set containing every normal index,\\
+	$\mathcal{I}_{Nvd}$: the set containing every normal index on root side $v$ and base side $d$\\
+	$\mathcal{P}$: the set containing every index part,\\
+	$\mathcal{P}_{R}$: the set containing the root index part\\
+	$\mathcal{P}_{s}$: the set containing the root side index parts, `$a$', `$b$', and `$c$',\\
+	$\mathcal{P}_{B}$: the set containing the base index part\\
+	$\mathcal{P}_{d}$: the set containing the base side index parts, `$l$' and `$r$',\\
+	$\mathcal{P}_{N}$: the set containing the normal index parts, `$H$' and `$V$'
+	
+	\begin{definition}
+		The \textbf{parent function} $p : \mathcal{I}_\Omega \setminus \mathcal{I}_R \to \mathcal{I}_\Omega$ is defined by
+		$$p(I \doubleplus i) = I$$
+		where $I \in \mathcal{I}_\Omega, i \in \mathcal{P}$
+	\end{definition}
+	
+	\begin{definition}
+		The \textbf{real parent function} $P : \mathcal{I} \setminus \mathcal{I}_R \to \mathcal{I}$ is defined by
+		$$P(I \doubleplus i) = \begin{cases}
+			I, & I \in \mathcal{I}\\
+			p(I), & \text{otherwise}
+  	\end{cases}$$
+		where $I \in \mathcal{I}_\Omega, i \in \mathcal{P}$
+	\end{definition}
+	
+	It is useful to derive which triangles an arbitrary triangle touches.
+	
+	Suppose we are in some view transformed space $\HSview$.
+
+	The root triangle, by definition, does not touch any other triangles.
+
+	It is clear that \textbf{a base triangle always touches its parent at its top vertex}. Its top vertex is also the origin of the triangle's left and right pseudo-sectors.
+
+	Notice now that, if we were to inscribe a horizontal triangle into one of the base triangle's pseudo-sectors,
+	its top point would have to be on the base triangle's respective pseudo-sector's top side.
+
+	Suppose we are on the left pseudo-sector side, then the left point of the constructed normal triangle touches the circle,
+	its top point touches the pseudo-sector's top side, and its right point touches its parent base triangle.
+	Notice how the top point is the origin of the horizontal pseudo-sector of the constructed normal triangle, and the right point is the origin of the vertical pseudo-sector.
+	The argument is analogous for the right pseudo-sector side, left and right are just swapped.
+
+	Since the origin of the normal triangle's horizontal pseudo-sector is on the same line as the origin of the pseudo-sector the normal triangle is contained in,
+	we can apply the same argument recursively, and conclude that
+	\textbf{a horizontal triangle's top vertex touches the same triangle that its parent's top vertex touches}.
+	
+	It is clear that \textbf{the other triangle that a horizontal triangle touches is its parent}.
+
+	Since the origin of the normal triangle's vertical pseudo-sector is on the same line as the origin of the pseudo-sector the normal triangle is contained in, we can
+	apply the same argument recursively, and conclude that
+	\textbf{a vertical triangle's non-top non-circle vertex touches the same triangle that its parent's non-top non-circle vertex touches}.
+	
+	It is clear that \textbf{the other triangle that a vertical triangle touches is its parent}.
+
+	\begin{definition}
+		A \textbf{horizontal touching index function} $t_H : \mathcal{I}_N \to \mathcal{I}_N \cup \mathcal{I}_B$ is defined by
+		$$t_H(I) = \begin{cases}
+			P(I),      & I \text{ is a horizontal index}\\
+			t_H(P(I)), & I \text{ is a vertical index}
+		\end{cases}$$
+	\end{definition}
+	
+	\begin{definition}
+		A \textbf{vertical touching index function} $t_V : \mathcal{I}_N \cup \mathcal{I}_B \to \mathcal{I}$ is defined by
+		$$t_V(I) = \begin{cases}
+			P(I),      & I \text{ is a vertical index or a base index}\\
+			t_V(P(I)), & I \text{ is a horizontal index}
+		\end{cases}$$
+	\end{definition}
+	
+	\begin{definition}
+		For some view transformed space $\HSview$ and normal index $I$, we will denote the pseudo-sector origin point
+		$$\HSO = \begin{cases}
+			\HST[P(I)], & I \text{ is a horizontal index}\\
+			\HSL[P(I)], & I \text{ is a right index and a vertical index}\\
+			\HSR[P(I)], & I \text{ is a left index and a vertical index}
+		\end{cases}$$
+		The pseudo-sector origin point of some normal triangle is the origin point of the pseudo-sector that normal
+		triangle is inscribed in.
+	\end{definition}
+
+	\begin{remark}
+		Notice how the $y$ coordinate of the top point of any normal triangle with index $I$ is its pseudo-sector's origin point's $y$ coordinate.
+		Notice, how, on the left base side, the normal triangle with index $I$ touches the line of angle $\HSlambda$, which goes through $\HSO$.
+		Notice, how, on the right base side, the normal triangle with index $I$ touches the line of angle $-\HSrho$, which goes through $\HSO$.
+		Notice how, this point is always inside the circle and not on it.
+	\end{remark}
+	
+
+	Every triangle has a side-to-height ratio on each of its sides. This side-to-height ratio remains constant for similar triangles.
+	In some view transformed space $\HSview$, the side-to-height ratio relevant to the problem is always going to be the
+	one relating to the triangle's bottom side, so we write
+	$$\HSk \coloneqq \cot\left(\HSlambda\right) + \cot\left(\HSrho\right)$$
+
+	Additionally, for some view transformation $\HSview$ and base side index part $d \in \mathcal{P}_d$
+	we will define the following constant: the slope of the left/right side when represented as a function of $y$:
+	$$\HSs \coloneqq \begin{cases}\cot\left(\HSlambda\right),& d = \HSindexpart{l}\\-\cot\left(\HSrho\right),& d = \HSindexpart{r}\end{cases}$$
+	
+	\newpage
+
+	\section{The root triangle}
+	We are given 2 angles $\alpha$ and $\beta$, corresponding to the angles of a triangle at vertices $A$ and $B$.
+	The angle at vertex $C$, $\gamma$, is redundent, so it does not need to be given.
+	We are also given an angle $\theta$, which is an offset rotation angle.
+
+	We place the initial point $A$ at $\left(r\cos\left(\theta\right), r\sin\left(\theta\right)\right)$.
+
+	In order to get the angles of the triangle to be $\alpha$, $\beta$, and $\gamma$, we use the fact that the angle
+	at the center of the circle is twice the angle at the circumferance. Our angles at the circumferance are
+	$\alpha$, $\beta$, and $\gamma$, respectively.
+
+	Since we are requiring that our circle have counter-clockwise winding order, our vertices have to be counter-clockwise
+	in order $A$, $B$, $C$. We know that the angle opposite side $c$, connecting $A$ and $B$, has to be $\gamma$.
+	Therefore, the arc distance between $A$ and $B$ has to be $2\gamma$. Therefore,
+	$B = \left(r\cos\left(\theta + 2\gamma\right), r\sin\left(\theta + 2\gamma\right)\right)$.
+	We know that the angle opposite $a$, connecting $B$ and $C$, has to be $\alpha$.
+	Therefore, the arc distance between $B$ and $C$ has to be $2\alpha$.
+	Therefore,
+	$C = \left(r\cos\left(\theta + 2\gamma + 2\alpha\right), r\sin\left(\theta + 2\gamma + 2\alpha\right)\right)$.
+	Note that $\alpha + \beta + \gamma = \pi$.
+	Therefore, $2\gamma + 2\alpha = 2\pi - 2\beta$. Therefore,
+	$C = \left(r\cos\left(\theta + 2\pi - 2\beta\right), r\sin\left(\theta + 2\pi - 2\beta\right)\right)$. Because
+	$\sin$ and $\cos$ both have a period of $2\pi$, we can further simplify this to:
+	$C = \left(r\cos\left(\theta - 2\beta\right), r\sin\left(\theta - 2\beta\right)\right)$.
+
+	We now have the following points:
+	\begin{align*}
+		A =& \left(r\cos\left(\theta\right), r\sin\left(\theta\right)\right) \\
+		B =& \left(r\cos\left(\theta + 2\gamma\right), r\sin\left(\theta + 2\gamma\right)\right) \\
+		C =& \left(r\cos\left(\theta - 2\beta\right), r\sin\left(\theta - 2\beta\right)\right)
+	\end{align*}
+
+	Now that we have the root triangle that is not in any view, we need to construct the view transformations
+	$\HSview[A]$, $\HSview[B]$, $\HSview[C]$.
+
+	Since all of the points are on the circle centered around the origin, and their coordinates are already in the form
+	$\left(r\cos\left(\Theta_1\right), r\sin\left(\Theta_1\right)\right)$, their rotation by some angle $\Theta_2$ is
+	equivalent to simply adding the angles:
+	$\left(r\cos\left(\Theta_1 + \Theta_2 \right), r\sin\left(\Theta_1 + \Theta_2\right)\right)$.
+
+	Starting with view $\HSview[C]$, we require that $c$ is parallel to the $x$-axis and that $C$ is above $c$ on the
+	$y$-axis. Since a view is a rotation of the coordinate system, we will define the angle by which we need to rotate
+	the coordinate system with $\theta_{\HSview[C]}$.
+
+	Without loss of generality, let $\theta = 0$. If $\theta \neq 0$, we can
+	simply add $-\theta$ to $\theta_{\HSview[C]}$ to undo its rotation.
+
+	Let $A' = \HSview[C]\left(A\right), B' = \HSview[C]\left(B\right), C' = \HSview[C]\left(C\right)$.
+
+	We require the following:
+	$$
+		C'_y > A'_y = B'_y \iff
+		r\sin\left(2\gamma + 2\alpha + \theta_{\HSview[C]}\right) >
+		r\sin\left(\theta_{\HSview[C]}\right) =
+		r\sin\left(2\gamma + \theta_{\HSview[C]}\right)
+	$$
+
+	If we let $\theta_{\HSview[C]} = \alpha + \beta + \frac{\pi}{2}$, we get
+	\begin{align*}
+		& r\sin\left(\alpha + \beta + \frac{\pi}{2}\right) = 
+		  r\sin\left(2\gamma + \alpha + \beta + \frac{\pi}{2}\right) & \iff \\
+		& \sin\left(\pi - \gamma + \frac{\pi}{2}\right) = 
+		  \sin\left(\gamma + \pi + \frac{\pi}{2}\right) & \iff \\
+		& \sin\left(\frac{3\pi}{2} - \gamma\right) = 
+		  \sin\left(\frac{3\pi}{2} + \gamma\right) & \iff \\
+		& \sin\left(-\frac{\pi}{2} - \gamma\right) = 
+		  \sin\left(\gamma - \frac{\pi}{2}\right) & \iff \\
+		& -\sin\left(\frac{\pi}{2} + \gamma\right) = 
+		  \sin\left(\gamma - \frac{\pi}{2}\right) & \iff \\
+		& \sin\left(\frac{\pi}{2} + \gamma - \pi\right) = 
+		  \sin\left(\gamma - \frac{\pi}{2}\right)
+	\end{align*}
+
+	Now, we need to prove that $C'_y > A'_y$ or $C'_y > B'_y$.
+
+	\begin{align*}
+		& r\sin\left(2\gamma + 2\alpha + \alpha + \beta + \frac{\pi}{2}\right) >
+		  r\sin\left(\alpha + \beta + \frac{\pi}{2}\right) & \iff \\
+		& r\sin\left(2\pi - 2\beta + \alpha + \beta + \frac{\pi}{2}\right) >
+		  r\sin\left(\alpha + \beta + \frac{\pi}{2}\right) & \iff \\
+		& r\sin\left(2\pi - \beta + \alpha + \frac{\pi}{2}\right) >
+		  r\sin\left(\alpha + \beta + \frac{\pi}{2}\right) & \iff \\
+		& r\sin\left(- \beta + \alpha + \frac{\pi}{2}\right) >
+		  r\sin\left(\alpha + \beta + \frac{\pi}{2}\right) & \iff \\
+		& r\sin\left(\alpha + \frac{\pi}{2} - \beta\right) >
+		  r\sin\left(\alpha + \frac{\pi}{2} + \beta\right)
+	\end{align*}
+
+	It is sufficient to prove that, for all $\alpha, \beta \in \left(0, \pi\right)$, 
+	$\sin\left(\alpha + \frac{\pi}{2} - \beta\right) >
+	 \sin\left(\alpha + \frac{\pi}{2} + \beta\right)$.
+	Rearranging, we get
+	$\sin\left(\alpha + \frac{\pi}{2} - \beta\right) - \sin\left(\alpha + \frac{\pi}{2} + \beta\right) > 0$.
+
+	We can use the product-sum identity for sin to get the following:
+	\begin{align*}
+		& 2\cdot\cos\left(\frac{\alpha + \frac{\pi}{2} - \beta + \alpha + \frac{\pi}{2} + \beta}{2}\right) \cdot
+	    \sin\left(\frac{\alpha + \frac{\pi}{2} - \beta - \alpha - \frac{\pi}{2} - \beta}{2}\right) > 0 & \iff \\
+		& \cos\left(\frac{2\alpha + \pi}{2}\right) \cdot
+		  \sin\left(-\beta\right) > 0 & \iff \\
+		& -\cos\left(\frac{2\alpha + \pi}{2}\right) \cdot
+		  \sin\left(\beta\right) > 0 & \iff \\
+	  & \cos\left(\frac{2\alpha + \pi}{2}\right) \cdot
+	    \sin\left(\beta\right) < 0
+	\end{align*}
+
+
+	For $\beta \in \left(0, \pi\right)$, $\sin\left(\beta\right) > 0$, so we need to prove
+	$\cos\left(\alpha + \frac{\pi}{2}\right) < 0$.
+
+	Since 
+	$\alpha \in \left(0, \pi\right)$, $\alpha + \frac{\pi}{2} \in \left(\frac{\pi}{2}, \frac{3\pi}{2}\right)$.
+	Cosine is negative in that domain.
+
+	Therefore, we have $\theta_{\HSview[C]} = \alpha + \beta + \frac{\pi}{2} - \theta = \pi - \gamma + \frac{\pi}{2} - \theta = \frac{3\pi}{2} - \gamma - \theta$.
+
+	The next view we observe is $\HSview[B]$, we require that $b$ is parallel to the $x$-axis and that $B$ is above $b$ on the
+	$y$-axis. Since a view is a rotation of the coordinate system, we will define the angle by which we need to rotate
+	the coordinate system with $\theta_{\HSview[B]}$.
+	
+	Without loss of generality, let $\theta = 0$. If $\theta \neq 0$, we can
+	simply add $-\theta$ to $\theta_{\HSview[B]}$ to undo its rotation.
+
+	Let $A' = \HSview[B]\left(A\right), B' = \HSview[B]\left(B\right), C' = \HSview[B]\left(C\right)$.
+
+	We require the following:
+	$$
+		B'_y > A'_y = C'_y \iff
+		r\sin\left(2\gamma + \theta_{\HSview[B]}\right) >
+		r\sin\left(\theta_{\HSview[B]}\right) =
+		r\sin\left(2\gamma + 2\alpha + \theta_{\HSview[B]}\right)
+	$$
+	
+	If we let $\theta_{\HSview[B]} = -\alpha - \gamma + \frac{\pi}{2}$, we get
+	\begin{align*}
+		& r\sin\left(\theta_{\HSview[B]}\right) =
+		  r\sin\left(2\gamma + 2\alpha + \theta_{\HSview[B]}\right) & \iff \\
+		& r\sin\left(-\alpha - \gamma + \frac{\pi}{2}\right) =
+		  r\sin\left(2\gamma + 2\alpha + -\alpha - \gamma + \frac{\pi}{2}\right) & \iff \\
+		& r\sin\left(-\alpha - \gamma + \frac{\pi}{2}\right) =
+		  r\sin\left(\gamma + \alpha + \frac{\pi}{2}\right) & \iff \\
+		& r\sin\left(\frac{\pi}{2} -\left(\alpha + \gamma\right) \right) =
+		  r\sin\left(\frac{\pi}{2} + \left(\alpha + \gamma\right)\right) & \iff \\
+		& \sin\left(\frac{\pi}{2} -\left(\alpha + \gamma\right) \right) =
+		  \sin\left(\frac{\pi}{2} + \left(\alpha + \gamma\right)\right) & \iff \\
+		& \sin\left(-\frac{\pi}{2} -\left(\alpha + \gamma\right) + \pi \right) =
+		  \sin\left(\frac{\pi}{2} + \left(\alpha + \gamma\right)\right) & \iff \\
+		& -\sin\left(-\frac{\pi}{2} -\left(\alpha + \gamma\right)\right) =
+		  \sin\left(\frac{\pi}{2} + \left(\alpha + \gamma\right)\right) & \iff \\
+		& \sin\left(\frac{\pi}{2} +\left(\alpha + \gamma\right)\right) =
+		  \sin\left(\frac{\pi}{2} + \left(\alpha + \gamma\right)\right) \\
+	\end{align*}
+
+	Now, we need to prove that $B'_y > A'_y$ or $B'_y > C'_y$.
+	\begin{align*}
+		& r\sin\left(2\gamma - \alpha - \gamma + \frac{\pi}{2}\right) >
+		  r\sin\left(-\alpha - \gamma + \frac{\pi}{2}\right) & \iff \\
+		& \sin\left(2\gamma - \alpha - \gamma + \frac{\pi}{2}\right) >
+		  \sin\left(-\alpha - \gamma + \frac{\pi}{2}\right) & \iff \\
+		& \sin\left(\gamma - \alpha + \frac{\pi}{2}\right) >
+		  \sin\left(-\alpha - \gamma + \frac{\pi}{2}\right)
+	\end{align*}
+
+	It is sufficient to prove that, for all $\alpha, \gamma \in \left(0, \pi\right)$, 
+	$\sin\left(\gamma - \alpha + \frac{\pi}{2}\right) >
+	 \sin\left(-\alpha - \gamma + \frac{\pi}{2}\right)$.
+	Rearranging, we get
+	$\sin\left(\gamma - \alpha + \frac{\pi}{2}\right) -
+	 \sin\left(-\alpha - \gamma + \frac{\pi}{2}\right) > 0$.
+	
+	We can use the product-sum identity for sin to get the following:
+	\begin{align*}
+	& 2\cdot\cos\left(\frac{\gamma - \alpha + \frac{\pi}{2} - \alpha - \gamma + \frac{\pi}{2}}{2}\right) \cdot
+		\sin\left(\frac{\gamma - \alpha + \frac{\pi}{2} + \alpha + \gamma - \frac{\pi}{2}}{2}\right) > 0 & \iff \\
+	& 2\cdot\cos\left(\frac{-2\alpha + \pi}{2}\right) \cdot
+		\sin\left(\frac{2\gamma}{2}\right) > 0 & \iff \\
+	& \cos\left(-\alpha + \frac{\pi}{2}\right) \cdot
+		\sin\left(\gamma\right) > 0
+	\end{align*}
+
+	Because $\gamma \in \left(0, \pi\right)$, $\sin\left(\gamma\right) > 0$, so it is sufficient to prove
+	$\cos\left(\frac{\pi}{2} - \alpha\right) > 0 \iff \sin\left(\alpha\right) > 0$
+	
+	Because $\alpha \in \left(0, \pi\right)$, $\sin\left(\alpha\right) > 0$.
+
+	Therefore, we have $\theta_{\HSview[B]} = -\alpha - \gamma + \frac{\pi}{2} - \theta = -\pi + \beta + \frac{\pi}{2}
+	- \theta = \beta - \frac{\pi}{2} - \theta$.
+
+	Finally, we observe $\HSview[A]$, we require that $a$ is parallel to the $x$-axis and that $A$ is above $a$ on the
+	$y$-axis. Since a view is a rotation of the coordinate system, we will define the angle by which we need to rotate
+	the coordinate system with $\theta_{\HSview[A]}$.
+	
+	Without loss of generality, let $\theta = 0$. If $\theta \neq 0$, we can
+	simply add $-\theta$ to $\theta_{\HSview[A]}$ to undo its rotation.
+
+	Let $A' = \HSview[A]\left(A\right), B' = \HSview[A]\left(B\right), C' = \HSview[A]\left(C\right)$.
+
+	We require the following:
+	$$
+		A'_y > B'_y = C'_y \iff
+		r\sin\left(\theta_{\HSview[A]}\right) >
+		r\sin\left(2\gamma + \theta_{\HSview[B]}\right) =
+		r\sin\left(2\gamma + 2\alpha + \theta_{\HSview[B]}\right)
+	$$
+
+	If we let $\theta_{\HSview[A]} = \beta - \gamma + \frac{\pi}{2}$, we get
+	\begin{align*}
+		& r\sin\left(2\gamma + \beta - \gamma + \frac{\pi}{2}\right) =
+		  r\sin\left(2\gamma + 2\alpha + \beta - \gamma + \frac{\pi}{2}\right) & \iff \\
+		& r\sin\left(\gamma + \beta + \frac{\pi}{2}\right) =
+		  r\sin\left(\gamma + 2\alpha + \beta + \frac{\pi}{2}\right) & \iff \\
+		& r\sin\left(\gamma + \beta + \frac{\pi}{2}\right) =
+		  r\sin\left(\pi + \alpha + \frac{\pi}{2}\right) & \iff \\
+		& r\sin\left(\gamma + \beta + \frac{\pi}{2}\right) =
+		  r\sin\left(\pi + \pi - \beta - \gamma + \frac{\pi}{2}\right) & \iff \\
+		& r\sin\left(\gamma + \beta + \frac{\pi}{2}\right) =
+		  r\sin\left(2\pi - \beta - \gamma + \frac{\pi}{2}\right) & \iff \\
+		& r\sin\left(\gamma + \beta + \frac{\pi}{2}\right) =
+		  r\sin\left(- \beta - \gamma + \frac{\pi}{2}\right) & \iff \\
+		& r\sin\left(\frac{\pi}{2} + \left(\beta + \gamma\right)\right) =
+		  r\sin\left(\frac{\pi}{2} - \left(\beta + \gamma\right)\right) & \iff \\
+		& r\sin\left(\frac{\pi}{2} + \left(\beta + \gamma\right)\right) =
+		  r\sin\left(-\frac{\pi}{2} - \left(\beta + \gamma\right) + \pi\right) & \iff \\
+		& r\sin\left(\frac{\pi}{2} + \left(\beta + \gamma\right)\right) =
+		  -r\sin\left(-\left(\frac{\pi}{2} + \left(\beta + \gamma\right)\right)\right) & \iff \\
+		& \sin\left(\frac{\pi}{2} + \left(\beta + \gamma\right)\right) =
+		  \sin\left(\frac{\pi}{2} + \left(\beta + \gamma\right)\right)
+	\end{align*}
+
+	Now, we need to prove that $A'_y > B'_y$ or $A'_y > C'_y$.
+	\begin{align*}
+		& r\sin\left(\beta - \gamma + \frac{\pi}{2}\right) >
+		  r\sin\left(2\gamma + \beta - \gamma + \frac{\pi}{2}\right) & \iff \\
+		& r\sin\left(\beta - \gamma + \frac{\pi}{2}\right) >
+		  r\sin\left(\gamma + \beta + \frac{\pi}{2}\right) & \iff \\
+		& \sin\left(\beta - \gamma + \frac{\pi}{2}\right) >
+		  \sin\left(\gamma + \beta + \frac{\pi}{2}\right)
+	\end{align*}
+
+	It is sufficient to prove that, for all $\beta, \gamma \in \left(0, \pi\right)$,
+	$\sin\left(\beta - \gamma + \frac{\pi}{2}\right) >
+	 \sin\left(\gamma + \beta + \frac{\pi}{2}\right)$. Rearranging, we get 
+	$\sin\left(\beta - \gamma + \frac{\pi}{2}\right) -
+	 \sin\left(\gamma + \beta + \frac{\pi}{2}\right) > 0$.
+
+	We can use the product-sum identity for sin to get the following:
+	\begin{align*}
+	  & 2 \cdot \cos\left(\frac{\beta - \gamma + \frac{\pi}{2} + \gamma + \beta + \frac{\pi}{2}}{2}\right) \cdot
+	    \sin\left(\frac{\beta - \gamma + \frac{\pi}{2} - \gamma - \beta - \frac{\pi}{2}}{2}\right) > 0 & \iff \\
+	  & 2 \cdot \cos\left(\frac{2\beta + \pi}{2}\right) \cdot
+	    \sin\left(\frac{-2\gamma}{2}\right) > 0 & \iff \\
+	  & 2 \cdot \cos\left(\beta + \frac{\pi}{2}\right) \cdot
+	    \sin\left(-\gamma\right) > 0 & \iff \\
+	  & \cos\left(\beta + \frac{\pi}{2}\right) \cdot
+	    \sin\left(-\gamma\right) > 0 & \iff \\
+	  & -\cos\left(\beta + \frac{\pi}{2}\right) \cdot
+	    \sin\left(\gamma\right) > 0 & \iff \\
+	  & \cos\left(\beta + \frac{\pi}{2}\right) \cdot
+	    \sin\left(\gamma\right) < 0
+	\end{align*}
+	
+	Because $\gamma \in \left(0, \pi\right)$, $\sin\left(\gamma\right) > 0$, so it is sufficient to prove
+	$\cos\left(\beta + \frac{\pi}{2}\right) < 0$
+
+	Since 
+	$\beta \in \left(0, \pi\right)$, $\beta + \frac{\pi}{2} \in \left(\frac{\pi}{2}, \frac{3\pi}{2}\right)$.
+	Cosine is negative in that domain.
+
+
+	Therefore, we have $\theta_{\HSview[A]} = \beta - \gamma + \frac{\pi}{2} - \theta$.
+
+	Finally, we have the following:
+	\begin{align*}
+		\theta_{\HSview[A]} &= \beta - \gamma + \frac{\pi}{2} - \theta \\
+		\theta_{\HSview[B]} &= \beta - \frac{\pi}{2} - \theta \\
+		\theta_{\HSview[C]} &= \frac{3\pi}{2} - \gamma - \theta
+	\end{align*}
+	
+	$\HSview[A]$ is a rotation of a point around the origin by $\theta_{\HSview[A]}$.\\
+	$\HSview[B]$ is a rotation of a point around the origin by $\theta_{\HSview[B]}$.\\
+	$\HSview[C]$ is a rotation of a point around the origin by $\theta_{\HSview[C]}$.
+
+	Now, in the future, we do all of the calculations of further triangles on some side $v$ in view $\HSview$.
+	After that, to get the actual position of the triangle in untransformed space, we apply $\HSview^{-1}$
+	to the calculated triangle.
+	
+	\newpage
+
+	\section{Base triangles}
+	
+	Suppose we are in some view transformed space $\HSview$.
+	Let $v$ be a root side identifier part which matches $\HSview$ (i.e. $\HSview = \widetilde{A} \implies v = \HSindexpart{a}$, etc.).
+
+	Because we are in $\HSview$, the bottom side of the root and any base triangle touches the circle at both of its vertices and is parallel to the $x$ axis.
+	Therefore, the bottom points must be inverses of each other:
+	\begin{equation}
+		\HSLx < 0 < \HSRx = -\HSLx, \forall I \in \mathcal{I}_R \cup \mathcal{I}_{Bv} \label{base-left-right-identity}
+	\end{equation}
+
+	Since the bottom side touches the circle, and the right point is greater than zero, we conclude:
+	\begin{equation}
+		\HSRx = \sqrt{r^2 - \HSRy^2}, \forall I \in \mathcal{I}_R \cup \mathcal{I}_{Bv} \label{base-bottom-circle-identity}
+	\end{equation}
+
+	Because we concluded that the top point of a base triangle must touch its parent's bottom side, we have
+	\begin{equation}
+		\HSTy = \HSLy[P(I)] = \HSRy[P(I)], \forall I \in \mathcal{I}_{Bv} \label{base-top-bottom-identity}
+	\end{equation}
+
+	This also implies that, to get a triangle's height, we can subtract the y coordinate of its top point from the y coordinate of the top of the next base triangle's point.
+	
+	Let $I \in \mathcal{I}_{Bv}$. Assume coordinates of all of $\HStriangle[P(I)]$'s vertices are known. This is, in fact, true for the root triangle's coordinates. We will thus set up a recurrence relation.
+
+	We know that any positive triangle's base side length is its right point's $x$ coordinate minus its left point's $x$ coordinate, so the side length of our known triangle is
+	$$\HSRx[P(I)] - \HSLx[P(I)] \xlongequal{\eqref{base-left-right-identity}} 2\HSRx[P(I)]$$
+
+	We know that any positive triangle's height is its top point's y coordinate minus its left/right point's y coordinate, so the height of our known triangle is:
+	$$\HSTy[P(I)] - \HSRy[P(I)] \xlongequal{\eqref{base-top-bottom-identity}} \HSTy[P(I)] - \HSTy$$
+
+	We know, because of \eqref{base-bottom-circle-identity} and \eqref{base-top-bottom-identity},
+	$$\HSRx[P(I)] = +\sqrt{r^2 - \HSRy[P(I)]^2} = \sqrt{r^2 - \HSTy^2}$$
+	
+	We know that the ratio of a triangle's base to its height is constant between similar triangles, and we named that ratio $\HSk$.
+	We are going to use this fact to calculate all of the next triangle's vertices' coordinates.
+
+	\subsection{The y value of the next top point}
+
+	We write:
+	\begin{align*}
+	  & \HSRx[P(I)] - \HSLx[P(I)] = \HSk\left(\HSTy[P(I)] - \HSRy[P(I)]\right)\\
+		\implies & 2\sqrt{r^2 - \HSTy^2} = \HSk\HSTy[P(I)] - \HSk\HSTy\\
+		\implies & 4r^2 - 4\HSTy^2 = \HSk^2\HSTy[P(I)]^2 - 2\HSk^2\HSTy[P(I)]\HSTy + \HSk^2\HSTy^2\\
+		\implies & \left(k^2_{\HSview} + 4\right)\HSTy^2 + \left(-2k^2_{\HSview}\HSTy[P(I)]\right)\HSTy + \left(k^2_{\HSview}\HSTy[P(S)]^2 - 4r^2\right)\\
+		\implies & \HSTy = \frac{
+			2k^2_{\HSview} \pm \sqrt{
+				4k^4_{\HSview}\HSTy[P(I)]^2 -
+				4\left(
+					k^4_{\HSview}\HSTy[P(I)]^2 -
+					4r^2k^2_{\HSview} +
+					4k^2_{\HSview}\HSTy[P(I)]^2 -
+					16r^2
+				\right)
+			}
+		}{2k^2_{\HSview} + 8}\\
+		\implies & \HSTy = \frac{
+			k^2_{\HSview}\HSTy[P(I)] \pm 2\sqrt{
+				r^2k^2_{\HSview} -
+				k^2_{\HSview}\HSTy[P(I)]^2 +
+				4r^2
+			}
+		}{k^2_{\HSview} + 4}
+	\end{align*}
+	
+	Since all of our top points have to be inside the circle---except the root triangle's top point, which may at most be at coordinate $(0, r)$---we set the following constraint:
+	\begin{equation}
+		\HSTy[P(I)] \in \left(-r, r\right]\label{base-circle-constraint}
+	\end{equation}
+
+	\begin{remark}
+		The inclusion of $\HSTy[P(I)] = r$ is specially for when $P(I) = R$. For every other base index $I$, we will get $\HSTy \in \left(-r, r\right).$
+		Notice also how $\eqref{base-circle-constraint}$ immediately implies that the discriminant is positive, since it has to be at least $4r^2$.
+	\end{remark}
+
+	Since the next base triangle has to be below the previous, our solution also has to satisfy the following:
+
+	\begin{equation}
+		\HSTy[P(I)] > \HSTy \label{base-height-requirement}
+	\end{equation}
+
+
+	\Needspace{60\baselineskip}
+	\begin{proposition}
+		The positive branch cannot satisfy both \eqref{base-circle-constraint} and \eqref{base-height-requirement} at once.
+	\end{proposition}
+	\begin{proof}
+		Assume that the branch is positive and that \eqref{base-circle-constraint} and \eqref{base-height-requirement} both hold.
+		\begin{align*}
+			\eqref{base-height-requirement} \implies & \HSTy[P(I)] > \frac{k^2_{\HSview}\HSTy[P(I)] + 2\sqrt{k^2_{\HSview}r^2 - k^2_{\HSview}\HSTy[P(I)]^2 + 4r^2}}{k^2_{\HSview} + 4}\\
+			\implies & k^2_{\HSview}\HSTy[P(I)] + 4\HSTy[P(I)] > k^2_{\HSview}\HSTy[P(I)] + 2\sqrt{k^2_{\HSview}r^2 - k^2_{\HSview}\HSTy[P(I)]^2 + 4r^2}\\
+			\implies & 2\HSTy[P(I)] > \sqrt{k^2_{\HSview}r^2 - k^2_{\HSview}\HSTy[P(I)]^2 + 4r^2}
+		\end{align*}
+		We do case analysis on $\HSTy[P(I)]$.
+		\begin{itemize}
+			\item \textbf{Case 1: $-r < \HSTy[P(I)] \le 0$:}\\
+				Then, $2\HSTy[P(I)] \leq 0$
+
+				But, $\sqrt{k^2_{\HSview}r^2 - k^2_{\HSview}\HSTy[P(I)]^2 + 4r^2} > 0$
+
+				$\contradiction$ The inequality cannot hold. 
+			\item \textbf{Case 2: $r \ge \HSTy[P(I)] > 0$:}\\
+				Since both sides of the inequality are positive, we can square them.
+				\begin{align*}
+					& 2\HSTy[P(I)] > \sqrt{k^2_{\HSview}r^2 - k^2_{\HSview}\HSTy[P(I)]^2 + 4r^2}\\
+					\implies & 4\HSTy[P(I)]^2 > k^2_{\HSview}r^2 - k^2_{\HSview}\HSTy[P(I)]^2 + 4r^2\\
+					\implies & \left(k^2_{\HSview} + 4\right)\HSTy[P(I)]^2 > \left(k^2_{\HSview} + 4\right)r^2\\
+					\implies & \HSTy[P(I)]^2 > r^2\\
+					\implies & \HSTy[P(I)] \in \left(r, \infty\right) &&\because \HSTy[P(I)] > 0
+				\end{align*}
+
+				$\contradiction$ If \eqref{base-height-requirement} holds, \eqref{base-circle-constraint} does not.
+		\end{itemize}
+	\end{proof}
+
+	\newpage
+
+	\begin{proposition}
+		If the negative branch satisfies \eqref{base-circle-constraint}, it also satisfies \eqref{base-height-requirement}.
+	\end{proposition}
+	\begin{proof}
+		Assume that the branch is negative and that \eqref{base-circle-constraint} holds.
+		We need to prove
+		\begin{align*}
+			&\HSTy[P(I)] > \frac{k^2_{\HSview}\HSTy[P(I)] - 2\sqrt{k^2_{\HSview}r^2 - k^2_{\HSview}\HSTy[P(I)]^2 + 4r^2}}{k^2_{\HSview} + 4}\\
+			\iff& k^2_{\HSview}\HSTy[P(I)] + 4\HSTy[P(I)] > k^2_{\HSview}\HSTy[P(I)] - 2\sqrt{k^2_{\HSview}r^2 - k^2_{\HSview}\HSTy[P(I)]^2 + 4r^2}\\
+			\iff & 2\HSTy[P(I)] > -\sqrt{k^2_{\HSview}r^2 - k^2_{\HSview}\HSTy[P(I)]^2 + 4r^2}
+		\end{align*}
+
+		We do case analysis on $\HSTy[P(I)]$.
+		\begin{itemize}
+			\item \textbf{Case 1: $0 \le \HSTy[P(I)] \le r$:}\\
+				$2\HSTy[P(I)] > -\sqrt{k^2_{\HSview}r^2 - k^2_{\HSview}\HSTy[P(I)]^2 + 4r^2}$
+				trivially holds because LHS is nonnegative and RHS is negative.
+
+			\item \textbf{Case 2: $-r < \HSTy[P(I)] < 0$:}\\
+				\begin{align*}
+					&\HSTy[P(I)] \in \left(-r, 0\right)\\
+					\implies & \HSTy[P(I)]^2 < r^2\\
+					\implies & \left(k^2_{\HSview} + 4\right)\HSTy[P(I)]^2 < \left(k^2_{\HSview} + 4\right)r^2\\
+					\implies & 4\HSTy[P(I)]^2 < k^2_{\HSview}r^2 - k^2_{\HSview}\HSTy[P(I)]^2 + 4r^2\\
+					\implies & -2\HSTy[P(I)] < \sqrt{k^2_{\HSview}r^2 - k^2_{\HSview}\HSTy[P(I)]^2 + 4r^2} && \because \HSTy[P(I)] < 0\\
+					\implies&2\HSTy[P(I)] > -\sqrt{k^2_{\HSview}r^2 - k^2_{\HSview}\HSTy[P(I)]^2 + 4r^2}\\
+				\end{align*}
+
+		\end{itemize}
+	\end{proof}
+	
+
+	Since this is a recurrence relation, our solution also has to satisfy the following:
+	$$\HSTy \in \left(-r, r\right]$$
+	In fact, we are going to prove it satisfies the following:
+	\begin{equation}
+		\HSTy \in \left(-r, r\right)\label{base-circle-constraint-induction-step}
+	\end{equation}
+	
+	\newpage
+
+	\begin{proposition}
+		$\eqref{base-circle-constraint} \implies \eqref{base-circle-constraint-induction-step}$.
+	\end{proposition}
+	
+
+	\begin{proof}
+		We define a function $f : \left[-r, r\right] \to \mathbb{R}$ with the rule
+		$$f(y) = \frac{
+			k^2_{\HSview}y - 2\sqrt{
+				r^2k^2_{\HSview} -
+				k^2_{\HSview}y^2 +
+				4r^2
+			}
+		}{k^2_{\HSview} + 4}$$
+
+		We set its derivative equal to zero.
+
+		\begin{align*}
+			&\frac{1}{k^2_{\HSview} + 4}\left(k^2 - \frac{-2k^2_{\HSview}y}{\sqrt{r^2k^2_{\HSview} - k^2_{\HSview}y^2 + 4r^2}}\right) = 0\\
+			\iff&\frac{y}{\sqrt{r^2k^2_{\HSview} - k^2_{\HSview}y^2 + 4r^2}} = -\frac{1}{2}
+		\end{align*}
+
+		Because of \eqref{base-circle-constraint}, we know that the denominator is positive, so y has to be negative for the expression to equal $-\frac{1}{2}$.
+
+		We square both sides.
+		
+		\begin{align*}
+			&\frac{y^2}{r^2k^2_{\HSview} - k^2_{\HSview}y^2 + 4r^2} = \frac{1}{4}\\
+			\iff&r^2\left(k^2_{\HSview} + 4\right) - y^2\left(k^2_{\HSview} + 4\right) = 0 && \text{denominator is positive}
+		\end{align*}
+
+		Since $y$ is negative, the solution is $-r$, which is the only critical point of the function.
+
+		Since $f$ is continuous on its domain, we can see that, because $f'(r) = \frac{2k^2_{\HSview}}{k^2_{\HSview} + 4} > 0$,
+		the function is strictly increasing, and its minimum is at $-r$.
+
+		So to get the minimum and maximum, we can just compute $f(-r) = -r$ and $f(r) = \frac{k^2_{\HSview} - 4}{k^2_{\HSview} + 4}r$.
+		$\frac{k^2_{\HSview} - 4}{k^2_{\HSview} + 4} \in \left(-1, 1\right)$ for $k > 0$
+
+		Therefore, $y \in \left(-r, r\right] \implies f(y) \in \left(-r, r\right)$
+
+	\end{proof}
+	\newpage
+	
+	Finally, we can conclude that, if a valid recurrence relation exists, it has to be:
+	
+	\begin{equation}
+		\HSTy = \frac{
+			k^2_{\HSview}\HSTy[P(I)] - 2\sqrt{
+				r^2k^2_{\HSview} -
+				k^2_{\HSview}\HSTy[P(I)]^2 +
+				4r^2
+			}
+		}{k^2_{\HSview} + 4} \label{base-triangle-top-y-equation}
+	\end{equation}
+
+	\begin{conjecture} \label{base-valid-solution}
+		$$\HSTx[R]^2 + \HSTy[R]^2 = r^2 \implies \HSTx[RvB]^2 + \HSTy[RvB]^2 < r^2$$
+		$$\forall I \in \mathcal{I}_{Bv}, \HSTx^2 + \HSTy^2 < r^2 \implies \HSTx[I\doubleplus B]^2 + \HSTy[I\doubleplus B]^2 < r^2$$
+
+		I.e. if the root triangle's top point is valid, every subsequent base triangle's top point has to stay inside the circle.
+	\end{conjecture}
+
+	\pagebreak
+
+	\subsection{The rest of the triangle}
+
+	Now that we have \eqref{base-triangle-top-y-equation}, we can use it to calculate everything else.
+
+	First, let us assign \eqref{base-triangle-top-y-equation} to some function.
+	Let $f : \left(-r, r\right] \to \left(-r, r\right)$ be defined by $$f(y) = \frac{k^2_{\HSview}y - 2\sqrt{r^2k^2_{\HSview} - k^2_{\HSview}y^2 + 4r^2}}{k^2_{\HSview} + 4}$$
+	
+	Then,
+	$$\HSTy = f\left(\HSTy[P(I)]\right)$$
+	$$\HSLy = \HSRy = \HSTy[I \doubleplus B] = f\left(\HSTy\right)
+	\because \eqref{base-top-bottom-identity}$$
+	$$\HSRx = \sqrt{r^2 - \HSRy^2}
+	\because \eqref{base-bottom-circle-identity}$$
+	$$\HSLx = -\HSRx \because \eqref{base-left-right-identity}$$
+
+	Finally, for $\HSTx$, we know that the line passing through
+	$\HST$ and $\HSL$ is of the angle $\HSlambda$.
+	We also know that the angle passing through $\HSR$ and $\HST$ is of the angle $-\HSrho$, as it is mirrored.
+
+	Then, we can set up an equation for $\HSTx$ using $\HSs[l] = \cot\left(\HSlambda\right)$ or $\HSs[r] = \cot\left(-\HSrho\right)$:
+	$$\HSTx = \HSs[l]\left(\HSTy - \HSLy\right) + \HSLx = \HSs[r]\left(\HSTy - \HSRy\right) + \HSRx$$
+	
+	Finally, we can reverse the $T$, $L$, $R$ substitution to get the actual points:
+	
+	$\HSA = \begin{cases}
+		\HST, & \HSview \text{ is } \HSview[A]\\
+		\HSR, & \HSview \text{ is } \HSview[B]\\
+		\HSL, & \HSview \text{ is } \HSview[C]\\
+  \end{cases}$,\quad\quad
+	$\HSB = \begin{cases}
+		\HSL, & \HSview \text{ is } \HSview[A]\\
+		\HST, & \HSview \text{ is } \HSview[B]\\
+		\HSR, & \HSview \text{ is } \HSview[C]\\
+  \end{cases}$,\quad\quad
+	$\HSC = \begin{cases}
+		\HSR, & \HSview \text{ is } \HSview[A]\\
+		\HSL, & \HSview \text{ is } \HSview[B]\\
+		\HST, & \HSview \text{ is } \HSview[C]\\
+  \end{cases}$
+	
+	\pagebreak
+
+	\section{Normal triangles}
+	
+	Suppose we are in some view transformed space $\HSview$.
+	Let $v$ be a root side identifier part which matches $\HSview$ (i.e. $\HSview = \widetilde{A} \implies v = \HSindexpart{a}$, etc.).
+
+	Because we are in $\HSview$, the bottom side of the normal triangle is parallel to the $x$ axis, so we can write:
+	\begin{equation}
+		\HSRy = \HSLy, \forall I \in \mathcal{I}_{Nvd}, d \in \set{\HSindexpart{l}, \HSindexpart{r}} \label{normal-left-right-identity}
+	\end{equation}
+
+	For some $I \in \mathcal{I}_{Nvd}$, where $d \in \set{\HSindexpart{l}, \HSindexpart{r}}$, we define the following:
+	
+	The base side sign constant:
+	$$\HSdelta \coloneqq \begin{cases}-1,& d = \HSindexpart{l}\\1,& d = \HSindexpart{r}\end{cases} \implies \HSdelta^2 = 1$$
+
+	The bottom side point that touches the circle:
+	$$\HSPSI = \begin{cases}
+		\HSL, & d = \HSindexpart{l}\\
+		\HSR, & d = \HSindexpart{r}
+	\end{cases}$$
+
+	The bottom side point that does not touch the circle:
+	$$\HSPHI = \begin{cases}
+		\HSR, & d = \HSindexpart{l}\\
+		\HSL, & d = \HSindexpart{r}
+	\end{cases}$$
+
+	Notice how $\eqref{normal-left-right-identity} \iff \HSPHIy = \HSPSIy$.
+
+	Suppose we are on the left base side.
+	We can make an equation for $\HSRy$ through $\HSO$. We know that the angle is supposed to be $\HSlambda$, so we write:
+	$$\HSRx = \cot\left(\HSlambda\right)\left(\HSRy - \HSOy\right) + \HSOx$$
+
+	Since we are on the left side, we have
+	$$\HSPHIx = \HSs[l]\left(\HSPHIy - \HSOy\right) + \HSOx$$
+	
+	Suppose we are on the right base side.
+	We can make an equation for $\HSLy$ through $\HSO$. We know that the angle is supposed to be $-\HSrho$, so we write:
+	$$\HSLx = \cot\left(-\HSrho\right)\left(\HSLy - \HSOy\right) + \HSOx$$
+
+	Since we are on the right side, we have
+	$$\HSPHIx = \HSs[r]\left(\HSPHIy - \HSOy\right) + \HSOx$$
+
+	We notice how this is equivalent to writing the same equation for both base sides:
+	\begin{equation}
+		\HSPHIx = \HSs\left(\HSPHIy - \HSOy\right) + \HSOx \label{normal-phi-x-identity}
+	\end{equation}
+	
+	Suppose we are on the left base side. Then, the left point a normal triangle touches the circle.
+	Notice how, because of the way the first base triangle's bottom points split the circular segment's arc
+	(the base's next base child has inverse left and right points), the $x$ value of the left point is always negative.
+	Analogously for the right base side, the $x$ coordinate of the right point is always positive.
+
+	Keeping that in mind because $\HSPSI$ is on the circle, we can derive $\HSPSIx$ in terms of $\HSPSIy \xlongequal{\eqref{normal-left-right-identity}} \HSPHIy$:
+	\begin{equation}
+		\HSPSIx = \HSdelta \sqrt{r^2 - \HSPHIy^2} \label{normal-psi-x-identity}
+	\end{equation}
+	
+	Notice that, regardless of the base side, the length of the bottom side of any triangle is $\HSRx - \HSLx$.
+	Rewriting that in terms of $\HSPSI$ and $\HSPHI$, we have
+
+	$$\begin{cases}
+		\HSPHIx - \HSPSIx, & d = \HSindexpart{l}\\\HSPSIx - \HSPHIx, & d = \HSindexpart{r}
+	\end{cases}$$
+
+	or equivalently, $\delta_d\left(\HSPSIx - \HSPHIx\right)$
+
+	Notice that, regardless of the base side, the height from the top point of any triangle is $\HSTy - \HSPHIy$ or equivalently,
+	$\HSOy - \HSPHIy$
+
+	We can now use the same method we used for base triangles to set up a quadratic equation for $\HSPHIy$.
+	\newpage
+	\subsection{The y value of the bottom side point touching a triangle}
+	
+	We are going to define helper constants that will appear in the derivation:
+	$$\HSsigma \coloneqq \HSdelta \HSs - \HSk$$
+	$$\HSkappa \coloneqq \HSdelta \HSOx - \HSsigma \HSOy$$
+
+	The second constant is for brevity and will be expanded again after we get the solution.
+
+	We write:
+	\begin{align*}
+		         & \HSdelta \left( \HSPSIx - \HSPHIx \right) = \HSk \left( \HSOy - \HSPHIy \right)\\
+		\implies & \sqrt{r^2 - \HSPHIy^2} - \HSdelta \HSs \HSPHIy + \HSdelta \HSs \HSOy - \HSdelta \HSOx = \HSk \HSOy - \HSk \HSPHIy\\
+		\implies & \sqrt{r^2 - \HSPHIy^2} = \left(\HSdelta \HSs - \HSk\right)\HSPHIy + \HSdelta\HSOx - \left(\HSdelta \HSs - \HSk\right)\HSOy\\
+		\implies & \sqrt{r^2 - \HSPHIy^2} = \HSsigma \HSPHIy + \left(\HSdelta\HSOx - \HSsigma\HSOy\right)\\
+		\implies & r^2 - \HSPHIy^2 = \HSsigma^2 \HSPHIy^2 + 2 \HSsigma\left(\HSdelta\HSOx - \HSsigma\HSOy\right)\HSPHIy + \left(\HSdelta\HSOx - \HSsigma\HSOy\right)^2\\
+		\implies & \left(\HSsigma^2 + 1\right)\HSPHIy^2 + \left(2\HSsigma\HSkappa\right)\HSPHIy + \left(\HSkappa^2 - r^2\right) = 0\\
+		\implies &\HSPHIy = \frac{-2\HSsigma\HSkappa \pm \sqrt{4\HSsigma^2\HSkappa^2 - 4\left(\HSsigma^2 + 1\right)\left(\HSkappa^2 - r^2\right)}}{2\HSsigma^2 + 2}\\
+		\implies &\HSPHIy = \frac{-\HSsigma\HSkappa \pm \sqrt{r^2\left(\HSsigma^2 + 1\right) - \HSkappa^2}}{\HSsigma^2 + 1}\\
+		\implies &\HSPHIy = \frac{\HSsigma^2\HSOy - \HSdelta\HSsigma\HSOx \pm \sqrt{r^2\left(\HSsigma^2 + 1\right) - \left(\HSdelta \HSOx - \HSsigma \HSOy\right)^2}}{\HSsigma^2 + 1}\\
+	\end{align*}
+
+	Since the pseudo-sector origin point $\HSO$ has to be inside the circle, we set the following constraint:
+	\begin{equation}
+		\HSOx^2 + \HSOy^2 < r^2 \label{normal-circle-constraint}
+	\end{equation}
+
+	Since the normal triangle we are constructing has to be below the previous, our solution also has to satisfy the following:
+	\begin{equation}
+		\HSPHIy < \HSOy \label{normal-height-requirement}
+	\end{equation}
+
+	\newpage
+
+	First, we have to prove that any solution is going to be real.
+	\begin{proposition} \label{normal-real-solution-exists}
+		$\eqref{normal-circle-constraint}$ implies that the expression under the square root of the solution is positive.
+	\end{proposition}
+
+	\begin{proof}
+		First, let's prove that the expression cannot equal 0.
+		Assume
+		\begin{align*}
+			r^2\left(\HSsigma^2 + 1\right) - \left(\HSdelta \HSOx - \HSsigma \HSOy\right)^2 = 0
+			\implies r^2\left(\HSsigma^2 + 1\right) = \left(\HSdelta \HSOx - \HSsigma \HSOy\right)^2
+		\end{align*}
+		Now, we write
+		{
+			\setlength{\jot}{0.75em}
+			\begin{align*}
+			         	 & \HSOx^2 + \HSOy^2 < r^2\\
+				\implies & \left(\HSOx^2 + \HSOy^2\right)\left(\HSsigma^2 + 1\right) < r^2\left(\HSsigma^2 + 1\right)\\
+				\implies & \left(\HSOx^2 + \HSOy^2\right)\left(\HSsigma^2 + 1\right) < \left(\HSdelta \HSOx - \HSsigma \HSOy\right)^2\\
+				\implies & \HSsigma^2\HSOx^2 + \HSsigma^2\HSOy^2 + \HSOx^2 + \HSOy^2 < \left(\HSdelta \HSOx - \HSsigma \HSOy\right)^2\\
+				\implies & \HSsigma^2\HSOx^2 + \HSsigma^2\HSOy^2 + \HSOx^2 + \HSOy^2 < \HSOx^2 - 2\HSdelta\HSsigma\HSOx\HSOy  + \HSsigma^2 \HSOy^2\\
+				\implies & \HSsigma^2\HSOx^2 + 2\HSdelta\HSsigma\HSOx\HSOy + \HSOy^2 < 0\\
+				\implies & \left(\HSdelta\HSsigma\HSOx + \HSOy\right)^2 < 0 \contradiction
+			\end{align*}
+		}
+
+		Therefore, the expression can never be exactly $0$.
+		
+		To prove it cannot be negative, we will use the intermediate value theorem.
+		With $\HSdelta \in \set{-1, 1}$ and $r > 0$ constant,
+		we define a domain
+		$$D = \set{(x, y, \sigma) \in \mathbb{R}^3 \given x^2 + y^2 < r^2}$$
+		and we define
+		$$f : D \to \mathbb{R},\quad f(x, y, \sigma) = r^2\left(\sigma^2 + 1\right) - \left(\HSdelta x - \sigma y\right)^2$$
+		Notice how we have proven that this function cannot equal $0$.
+
+		Since $D$ is path-connected and $f$ is continuous, we evaluate $f\left(0, 0, 0\right) = r^2 > 0$.
+		Suppose that there exists some point
+		$\left(\overline{x}, \overline{y}, \overline{\sigma}\right)$ where
+		$f\left(\overline{x}, \overline{y}, \overline{\sigma}\right) < 0$.
+
+		Since $D$ is path-connected, for every path function $p : \left[0, 1\right] \to D$ with
+		$p\left(0\right) = \left(0, 0, 0\right)$ and $p\left(1\right) = \left(\overline{x}, \overline{y}, \overline{\sigma}\right)$,
+		$f \circ p : \left[0, 1\right] \to \mathbb{R}$ is continuous. Then, because
+		$\left(f \circ p\right)\left(0\right) > 0$ and $\left(f \circ p\right)\left(1\right) < 0$,
+		we can apply the intermediate value theorem to conclude
+		that there must exist some $\xi \in \left(0, 1\right)$ such that $\left(f \circ p\right)\left(\xi\right) = 0$.
+
+		We have already proven that such a point cannot exist. Therefore, neither can $\left(\overline{x}, \overline{y}, \overline{\sigma}\right)$.
+		Since the function is never $0$, and there cannot exist a point where it is negative, it must be positive on its domain.
+		Therefore, the expression under the square root equivalent to the function is also positive.
+	\end{proof}
+
+	\newpage
+	
+	\begin{proposition}
+		The positive branch cannot satisfy both \eqref{normal-circle-constraint} and \eqref{normal-height-requirement} at the same time.
+	\end{proposition}
+
+	\begin{proof}
+		Assume that the positive branch is the solution and that \eqref{normal-circle-constraint} and \eqref{normal-height-requirement} both hold.
+
+		Let $S = \sqrt{r^2\left(\HSsigma^2 + 1\right) - \left(\HSdelta \HSOx - \HSsigma \HSOy\right)^2}$
+
+		Then,
+		\begin{align*}
+			&\eqref{normal-height-requirement} \iff \HSOy > \frac{\HSsigma^2\HSOy - \HSdelta\HSsigma\HSOx + S}{\HSsigma^2 + 1}\\
+			\iff& \HSOy\HSsigma^2 + \HSOy > \HSsigma^2\HSOy - \HSdelta\HSsigma\HSOx + S\\
+			\iff& \HSOy + \HSdelta\HSsigma\HSOx > S\\
+			\iff& \HSOy + \HSdelta\HSsigma\HSOx > \sqrt{r^2\left(\HSsigma^2 + 1\right) - \left(\HSdelta \HSOx - \HSsigma \HSOy\right)^2}
+		\end{align*}
+		Since \eqref{normal-circle-constraint} holds, the RHS is positive by \ref{normal-real-solution-exists}.
+
+		We do case analysis on $\HSOy + \HSdelta\HSsigma\HSOx$.
+		\begin{itemize}
+			\item \textbf{Case 1: $\HSOy + \HSdelta\HSsigma\HSOx \le 0$:}\\
+
+			$\contradiction$ The inequality cannot hold.
+			\item \textbf{Case 2: $\HSOy + \HSdelta\HSsigma\HSOx > 0$:}\\
+
+				Since LHS and RHS are both positive, we can square both sides and preserve the inequality.
+				\begin{align*}
+					&\HSOy + \HSdelta\HSsigma\HSOx > \sqrt{r^2\left(\HSsigma^2 + 1\right) - \left(\HSdelta \HSOx - \HSsigma \HSOy\right)^2}\\[1em]
+					\iff & \HSOy^2 + 2\HSdelta\HSsigma\HSOy\HSOx + \HSsigma^2\HSOx^2 >{}\\
+					{}>{}& r^2\left(\HSsigma^2 + 1\right) - \HSOx^2 + 2\HSdelta\HSsigma\HSOy\HSOx - \HSsigma^2\HSOy^2\\[1em]
+					\iff & \HSOx^2 + \HSOy^2 + \HSsigma^2\HSOx^2 + \HSsigma^2\HSOy^2 > r^2\left(\HSsigma^2 + 1\right)\\[1em]
+					\iff & \left(\HSOx^2 + \HSOy^2\right)\left(\HSsigma^2 + 1\right) > r^2\left(\HSsigma^2 + 1\right)\\[1em]
+					\iff & \HSOx^2 + \HSOy^2 > r^2
+				\end{align*}
+				$\contradiction$ This is incompatible with \eqref{normal-circle-constraint}, which we assumed holds.
+		\end{itemize}
+
+	\end{proof}
+
+	\newpage
+	
+	\begin{proposition}
+		If the negative branch satisfies \eqref{normal-circle-constraint}, it satisfies \eqref{normal-height-requirement}.
+	\end{proposition}
+
+	\begin{proof}
+		Assume that the negative branch is the solution and that \eqref{normal-circle-constraint} holds.
+
+		Let $S = -\sqrt{r^2\left(\HSsigma^2 + 1\right) - \left(\HSdelta \HSOx - \HSsigma \HSOy\right)^2}$
+
+		Then, we need to prove
+		\begin{align*}
+			&\eqref{normal-height-requirement} \iff \HSOy > \frac{\HSsigma^2\HSOy - \HSdelta\HSsigma\HSOx + S}{\HSsigma^2 + 1}\\
+			\iff& \HSOy\HSsigma^2 + \HSOy > \HSsigma^2\HSOy - \HSdelta\HSsigma\HSOx + S\\
+			\iff& \HSOy + \HSdelta\HSsigma\HSOx > S\\
+			\iff& \HSOy + \HSdelta\HSsigma\HSOx > -\sqrt{r^2\left(\HSsigma^2 + 1\right) - \left(\HSdelta \HSOx - \HSsigma \HSOy\right)^2}\\
+			\iff& -\HSOy - \HSdelta\HSsigma\HSOx < \sqrt{r^2\left(\HSsigma^2 + 1\right) - \left(\HSdelta \HSOx - \HSsigma \HSOy\right)^2}
+		\end{align*}
+		Since \eqref{normal-circle-constraint} holds, the RHS is positive by \ref{normal-real-solution-exists}.
+
+		We do case analysis on $-\HSOy - \HSdelta\HSsigma\HSOx$.
+		\begin{itemize}
+			\item \textbf{Case 1: $-\HSOy - \HSdelta\HSsigma\HSOx \le 0$:}\\
+			
+			The inequality trivially holds.
+			\item \textbf{Case 2: $-\HSOy - \HSdelta\HSsigma\HSOx > 0$:}\\
+				\begin{align*}
+					&\HSOy^2 + \HSOy^2 < r^2\\[1em]
+					\implies & \left(\HSOy^2 + \HSOy^2\right)\left(\HSsigma^2 + 1\right) < r^2\left(\HSsigma^2 + 1\right)\\[1em]
+					\implies & \HSOx^2 + \HSOy^2 + \HSsigma^2\HSOx^2 + \HSsigma^2\HSOy^2 < r^2\left(\HSsigma^2 + 1\right)\\[1em]
+					\implies & \HSOy^2 + 2\HSdelta\HSsigma\HSOy\HSOx + \HSsigma^2\HSOx^2 <{}\\
+					{}<{}& r^2\left(\HSsigma^2 + 1\right) - \HSOx^2 + 2\HSdelta\HSsigma\HSOy\HSOx - \HSsigma^2\HSOy^2\\[1em]
+					\implies&\left(\HSOy + \HSdelta\HSsigma\HSOx\right)^2 < r^2\left(\HSsigma^2 + 1\right) - \left(\HSdelta \HSOx - \HSsigma \HSOy\right)^2\\[1em]
+					\implies& -\HSOy - \HSdelta\HSsigma\HSOx < \sqrt{r^2\left(\HSsigma^2 + 1\right) - \left(\HSdelta \HSOx - \HSsigma \HSOy\right)^2}
+				\end{align*}
+
+		\end{itemize}
+
+	\end{proof}
+
+	Finally, we conclude that, if a valid recurrence relation exists, it has to be:
+  \begin{equation}
+  	\HSPHIy = \frac{\HSsigma^2\HSOy - \HSdelta\HSsigma\HSOx - \sqrt{r^2\left(\HSsigma^2 + 1\right) - \left(\HSdelta \HSOx - \HSsigma \HSOy\right)^2}}{\HSsigma^2 + 1} \label{normal-triangle-phi-y-equation}
+  \end{equation}
+	
+	\begin{conjecture} \label{normal-valid-solution}
+		Assuming that $\ref{base-valid-solution}$ holds,
+		for some base index $I_B$ and all normal indices $I$, where $I$ is a descendent of $I_B$,
+		$$\HSOx^2 + \HSOy^2 < r^2 \implies \HSPHIx^2 + \HSPHIy^2 < r^2$$
+		$$\HSOx^2 + \HSOy^2 < r^2 \implies \HSTx^2 + \HSTy^2 < r^2$$
+
+		I.e. if the base triangle $\HStriangle[I_B]$ that $\HStriangle$ is a descendent of is valid,
+		then any of its normal descendents is valid as well.
+	\end{conjecture}
+
+	In combination, \ref{base-valid-solution} and \ref{normal-valid-solution} imply that, if the root triangle is valid (non-degenerate), then all of its descendents are. Since we can always find a descendent using the base and normal formulas, there are an infinite amount of triangles that can fit into the circle for any choice of root triangle.
+
+	The only `part' of these conjectures that I have successfully proven is that the base triangle's top vertex's $y$ coordinate remains
+	in the range $\left(-r, r\right]$.
+	
+	\newpage
+
+
+	\subsection{The rest of the triangle}
+	Now that we have \eqref{normal-triangle-phi-y-equation}, we can use it to calculate everything else.
+
+	First, let us assign \eqref{normal-triangle-phi-y-equation} to some function.
+	Let $f : \left(-r, r\right) \times \left(-r, r\right) \to \left(-r, r\right)$ be defined by
+  $$
+  f(x, y) =
+  \frac{\HSsigma^2y - \HSdelta\HSsigma x - \sqrt{r^2\left(\HSsigma^2 + 1\right) - \left(\HSdelta x - \HSsigma y\right)^2}}{\HSsigma^2 + 1}
+  $$
+
+	Then,
+	$$\HSPHIy = f\left(\HSOx, \HSOy\right)$$
+	$$\HSPHIx = \HSs\left(\HSPHIy, - \HSOy\right) + \HSOx \because \eqref{normal-phi-x-identity}$$
+	$$\HSPSIy = \HSPHIy \because \eqref{normal-left-right-identity}$$
+	$$\HSPSIx = \HSdelta \sqrt{r^2 - \HSPHIy^2} \because \eqref{normal-psi-x-identity}$$
+
+	We can reverse our $\Phi$ and $\Psi$ substitutions:
+
+	$$\HSL = \begin{cases}
+		\HSPSI, & d = \HSindexpart{l}\\
+		\HSPHI, & d = \HSindexpart{r}
+	\end{cases}$$
+
+	$$\HSR = \begin{cases}
+		\HSPHI, & d = \HSindexpart{l}\\
+		\HSPSI, & d = \HSindexpart{r}
+	\end{cases}$$
+
+	$$\HSTy = \HSOy$$
+
+	For $\HSTx$, we know that the line passing through
+	$\HST$ and $\HSL$ is of the angle $\HSlambda$.
+	We also know that the angle passing through $\HSR$ and $\HST$ is of the angle $-\HSrho$, as it is mirrored.
+
+	Then, we can set up an equation for $\HSTx$ using $\HSs[l] = \cot\left(\HSlambda\right)$ or $\HSs[r] = \cot\left(-\HSrho\right)$:
+	$$\HSTx = \HSs[l]\left(\HSTy - \HSLy\right) + \HSLx = \HSs[r]\left(\HSTy - \HSRy\right) + \HSRx$$
+	
+	Finally, we can reverse the $T$, $L$, $R$ substitution to get the actual points:
+	
+	$\HSA = \begin{cases}
+		\HST, & \HSview \text{ is } \HSview[A]\\
+		\HSR, & \HSview \text{ is } \HSview[B]\\
+		\HSL, & \HSview \text{ is } \HSview[C]\\
+  \end{cases}$,\quad\quad
+	$\HSB = \begin{cases}
+		\HSL, & \HSview \text{ is } \HSview[A]\\
+		\HST, & \HSview \text{ is } \HSview[B]\\
+		\HSR, & \HSview \text{ is } \HSview[C]\\
+  \end{cases}$,\quad\quad
+	$\HSC = \begin{cases}
+		\HSR, & \HSview \text{ is } \HSview[A]\\
+		\HSL, & \HSview \text{ is } \HSview[B]\\
+		\HST, & \HSview \text{ is } \HSview[C]\\
+  \end{cases}$
+
+	\newpage
+	\section{Algorithm}
+	This section is more informal than the previous ones and simply describes how the program bundled with this document
+	functions using all of the information described above.
+	
+	The following describes the areas inside the circle that are not necessarily covered by triangles.
+	
+	It is easy to conclude that, in some view transformed space, if we
+	take some normal triangle on the left side, and reflect it about its right side,
+	the space left blank by creating that triangle will be perfectly filled.
+	This is because the space left blank is a triangle, it shares one of the sides, and it can easily be shown
+	that it shares all angles with the existing triangle. So, by side-angle-side, it has to be congruent.
+
+	We will call such a triangle a \textbf{negative triangle}. Both because it is in the negative space
+	left by adding a positive triangle into a pseudo-sector, or because it is flipped upside down from a
+	positive triangle in the view transformation.
+
+	So, in some view transformed space, we have the following primitive shapes: \begin{itemize}
+		\item positive triangles
+		\item negative triangles
+		\item circular segments
+		\item circular pseudo-sectors
+	\end{itemize}
+
+	We define a \textbf{shape collection} in to be one of:\begin{itemize}
+		\item root shape collection -   a triangle and three circular segments corresponding to each of the triangle's sides,
+		\item base shape collection -   a positive triangle, a circular segment corresponding to its bottom
+		\item base side shape collection - one pseudo-segment
+		\item normal shape collection - two triangles, one positive, one negative, and two pseudo-sectors, one horizontal, one vertical
+	\end{itemize}
+
+	Shape collections are simply a way to hold primitives that the algorithm may want to draw.
+
+	The root triangle node holds a root shape collection labeled ``untransformed''.
+
+	A root side node holds a base shape collection labeled ``transformed''. This node also holds the side-to-height ratio.
+
+	A base triangle node holds a base shape collection labeled ``transformed'' and another labeled ``untransformed''.
+
+	A base side node holds a base side shape collection labaled ``transformed'' and another labeled ``untransformed''. This node also holds the left/right slope.
+	
+	A normal triangle node holds a normal shape collection labeled ``transformed'' and another labeled ``untransformed''.
+
+	The main program is split into multiple stages.
+
+	The program is split into two stages.
+
+	The first stage involves creating a \textbf{triangle tree} object using a radius $r$, and angles
+	$\alpha$, $\beta$, $\theta$, described above.
+
+	Then, we calculate the root, and recursively calculate its children. Creating a node populates ``transformed'' (if applicable) and ``untransformed'' (if applicable) with the proper shape collections.
+	
+	The root side nodes contain a
+	view transformed root triangle of the respective side. Effectively, in a view transformed space, the root triangle becomes the `0th' base triangle, hence why the root side node itself has a base triangle shape collection.
+
+	The tree in the algorithm acts identically to the one described in the sections above.
+
+	The idea is that the transformed shape collections serve as a way to create new nodes, with their own
+	shape collections derived from the previous ones. This is the \textbf{calculation} stage, where the algorithm recursively creates new nodes from existing nodes, using the
+	equations we have described in previous sections.
+
+	At this point, our triangle tree now has all of the primitive data required to draw the shape we want to draw.
+
+	The next stage is the \textbf{drawing} stage, where an interface called a \texttt{Drawer} may do whatever it wants
+	with the information passed from a triangle tree.
+
+	A wrapper around a calculation and drawing sequence called a \texttt{Processor} has also been created in the example code, and used is to draw the figures in this document.
+
+\end{document}

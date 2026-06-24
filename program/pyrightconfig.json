@@ -1,0 +1,6 @@
+{
+	"reportImplicitStringConcatenation": false,
+	"reportExplicitAny": false,
+	"reportAny": false,
+	"strict": ["*"]
+}
