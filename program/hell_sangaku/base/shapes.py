@@ -199,8 +199,7 @@ class Triangle:
 @dataclass(frozen=True)
 class PositiveTriangle(Triangle):
     """
-    Type representing upwards facing triangles in positive
-    view transformations.
+    Type representing upwards facing triangles in view transformations.
 
     Members:
         a : the original a point
@@ -315,7 +314,7 @@ class PositiveTriangle(Triangle):
 @dataclass(frozen=True)
 class NegativeTriangle(Triangle):
     """
-    Type representing downwards facing triangles in positive view
+    Type representing downwards facing triangles in view
     transformations.
 
     Members:

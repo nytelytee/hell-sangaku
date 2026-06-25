@@ -198,9 +198,9 @@ class RootTriangleNode:
 @dataclass
 class RootSideNode:
     """
-    Node representing a positive view transformation attached to a
+    Node representing a view transformation attached to a
     root triangle node. The root triangle acts as a base triangle in
-    that positive view transformation.
+    that view transformation.
     """
     
     tree: TriangleTree
